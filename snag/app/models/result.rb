@@ -36,9 +36,23 @@ keywords = ["banks", "terrible", "finance"]
     puts result;
   end
 
+
   def save_relevent_messages(messages)
     messages.each do |x|
       Result.new(message: x.message, date: x.date, username: x.username)
     end
   end
+
+  def self.get_tweets(term)
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = Figaro.env.twitter_key
+      config.consumer_secret = Figaro.env.twitter_secret
+    end
+
+    client.search(term, geocode: "43.6521,79.3832,1000mi").each do |tweet|
+      # puts tweet.text
+    end
+  end
+
+
 end
