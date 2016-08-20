@@ -4,53 +4,88 @@ require 'indico'
 
 # model vars
 Indico.api_key = "dd5e35044234093be537186e304d0531"
-keywords = ["banks", "terrible", "finance"]
+
+  def self.get_tweets(term = "banks")
+    Result.delete_all
+
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = "vYjNKR8TyCYEfJpDM1Dro4aiM"
+      config.consumer_secret = "CJhHRTELfXXr2Ud2nGcc3hPeQTiUx6dfQ0CAEGO6LGRRoHQdmf"
+    end
+
+    tweet_array = []
+
+    client.search(term, geocode: "43.6521,79.3832,1000mi").each do |tweet|
+
+      puts check_for_keywords(tweet.text)
+      puts filter_emotions(tweet.text)
+
+      if check_for_keywords(tweet.text) && filter_emotions(tweet.text)
+        tweet_array << {message: tweet.text, date: tweet.created_at, username: tweet.user.name}
+      end
+    end
+
+    puts tweet_array
+    save_relevent_messages(tweet_array)
+  end
 
   def self.check_for_keywords(string)
     # get result from indico
-    result = Indico.keywords(string, {version: 2})
-    puts result
 
-    # return true if the keyword exists, else return false
-    result.each do |key, value|
-      if keywords.include?(key) && value > 0.5
-        return true
+    begin
+      result = Indico.keywords(string, {version: 2})
+    rescue
+      puts "could not parse that (keywords)"
+    else
+      puts 'end'
+      puts result
+
+      # get keywords
+      keywords = ["banks", "finance"]
+
+      # return true if the keyword exists, else return false
+      result.each do |key, value|
+        if keywords.include?(key)
+          return true
+        end
       end
+      return false
     end
-    return false
   end
 
   def self.check_for_politics(string)
     # get result from indico
-    result = Indico.political(string)
-    puts result
-
-    if result["liberal"] > 0.3
-      return true
+    begin
+      result = Indico.political(string)
+    rescue
+      puts "could not parse that (politics)"
+    else
+      if result["liberal"]
+        return true
+      end
+      return false
     end
-    return false
   end
 
-  def self.filter_emotions(message)
-    result = Indico.emotion(message, {top_n: 1});
-    puts result;
+  def self.filter_emotions(string)
+    begin
+      result = Indico.emotion(string, {top_n: 3});
+    rescue
+      puts "could not parse that (emotions)"
+    else
+      if result["anger"]
+        return true
+      else
+        return false
+      end
+    end
   end
 
 
-  def save_relevent_messages(messages)
+  def self.save_relevent_messages(messages)
     messages.each do |x|
-      Result.new(message: x.message, date: x.date, username: x.username)
-    end
-  end
-
-  def self.get_tweets(term)
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key    = Figaro.env.twitter_key
-      config.consumer_secret = Figaro.env.twitter_secret
-    end
-
-    client.search(term, geocode: "43.6521,79.3832,1000mi").each do |tweet|
-      # puts tweet.text
+        Result.create(message: x[:message], date: x[:date], username: x[:username])
+        puts 'stored'
     end
   end
 
