@@ -1,12 +1,11 @@
 class Result < ActiveRecord::Base
 
-
-
-
-
+require 'indico'
 
 def filter_by_keywords
-  bowei_api_key = dd5e35044234093be537186e304d0531
+  Indico.api_key = ENV['figaro_api_key']
+  result = Indico.keywords("These banks are terrible", {version: 2});
+  console.log(result);
 end
 
 end
