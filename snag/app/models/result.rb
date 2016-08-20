@@ -14,8 +14,8 @@ end
       config.consumer_secret = Figaro.env.twitter_secret
     end
 
-    client.search(term).each do |tweet|
-      puts tweet.text
+    client.search(term, geocode: "43.6521,79.3832,1000mi").each do |tweet|
+      # puts tweet.text
     end
   end
 
