@@ -13,12 +13,9 @@ def self.filter_emotions(message)
   result = Indico.emotion(message, {top_n: 1});
   puts result;
 
-  result.each do |key, value|
-    if emotion.include?(key) && value > 0.3
+    if (result(value)) > 0.3)
       return true;
     end
   end
-
-end
 
 end
