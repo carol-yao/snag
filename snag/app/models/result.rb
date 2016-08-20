@@ -8,4 +8,7 @@ def filter_by_keywords
   console.log(result);
 end
 
+  def get_tweets
+  end
+
 end
