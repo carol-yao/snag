@@ -1,5 +1,6 @@
 class ResultsController < ApplicationController
   def new
+    @result = Result.new
   end
 
   def index
@@ -9,5 +10,10 @@ class ResultsController < ApplicationController
   end
 
   def create
+  end
+
+  private
+  def results_params
+    params.require(:result).permit(:message, :date, :username)
   end
 end
