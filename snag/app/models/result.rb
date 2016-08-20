@@ -9,6 +9,14 @@ def filter_by_keywords
 end
 
   def get_tweets
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = Figaro.env.twitter_key
+      config.consumer_secret = Figaro.env.twitter_secret
+    end
+
+    client.search("bank").each do |tweet|
+      puts tweet.text
+    end
   end
 
 end
