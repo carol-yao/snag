@@ -8,13 +8,13 @@ def filter_by_keywords
   console.log(result);
 end
 
-  def get_tweets
+  def self.get_tweets(term)
     client = Twitter::REST::Client.new do |config|
       config.consumer_key    = Figaro.env.twitter_key
       config.consumer_secret = Figaro.env.twitter_secret
     end
 
-    client.search("bank").each do |tweet|
+    client.search(term).each do |tweet|
       puts tweet.text
     end
   end
