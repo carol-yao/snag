@@ -34,10 +34,6 @@ keywords = ["banks", "terrible", "finance"]
   def self.filter_emotions(message)
     result = Indico.emotion(message, {top_n: 1});
     puts result;
-
-    if (result(value)) > 0.3)
-      return true;
-    end
   end
 
   def save_relevent_messages(messages)
