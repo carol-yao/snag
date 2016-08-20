@@ -1,13 +1,13 @@
 class ResultsController < ApplicationController
-  def new
-  end
 
   def index
+    @results = Result.all
+    render json: @results
   end
 
   def show
+    @result = Result.find(params[:id])
+    render json: @result
   end
 
-  def create
-  end
 end
