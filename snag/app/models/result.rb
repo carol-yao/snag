@@ -67,6 +67,17 @@ Indico.api_key = "dd5e35044234093be537186e304d0531"
     end
   end
 
+  def self.add_text_tags(string)
+    begin
+      result = Indico.text_tags(string, {top_n: 1})
+      puts result
+    rescue
+      puts "No valid text tag"
+    else
+      return result.keys.join("")
+    end
+  end
+
   def self.check_for_politics(string)
     # get result from indico
     begin
@@ -105,12 +116,9 @@ Indico.api_key = "dd5e35044234093be537186e304d0531"
   def self.save_relevent_messages(messages)
 
     messages.each do |x|
-      result = Indico.text_tags(x[:message], {top_n: 3})
-      result_keys = result.keys
-      arr_string = result_keys.join(",")
-      x[:text_tags] = arr_string
 
-      Result.create(message: x[:message], date: x[:date], username: x[:username], text_tags: x[:text_tags])
+      text_tags = add_text_tags(x[:message])
+      Result.create(message: x[:message], date: x[:date], username: x[:username], text_tags: text_tags)
       puts 'stored'
 
     end
