@@ -5,7 +5,7 @@ require 'indico'
 # model vars
 Indico.api_key = "dd5e35044234093be537186e304d0531"
 
-  def self.get_tweets(term = "banks OR finance OR investment OR banking OR accounts OR stocks OR assets OR reinvest OR invest OR bank OR money")
+  def self.get_tweets(term = "#banks OR #finance OR #investment OR #banking OR #accounts OR #stocks OR #assets OR #reinvest OR #invest OR #bank OR #money")
     Result.delete_all
 
     client = Twitter::REST::Client.new do |config|
