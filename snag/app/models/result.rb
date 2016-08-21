@@ -1,7 +1,10 @@
 class Result < ActiveRecord::Base
 
 require 'indico'
+require 'net/http'
+require 'json'
 
+# base_uri 'reddit.com'
 # model vars
 Indico.api_key = "dd5e35044234093be537186e304d0531"
 
@@ -29,6 +32,16 @@ Indico.api_key = "dd5e35044234093be537186e304d0531"
     save_relevent_messages(tweet_array)
   end
 
+  def self.get_subreddit
+    uri = URI.parse("https://www.reddit.com/r/personalfinance.json")
+    params = { :limit => 100, :page => 3 }
+    uri.query = URI.encode_www_form(params)
+
+    res = Net::HTTP.get_response(uri)
+    puts res.body if res.is_a?(Net::HTTPSuccess)
+    # response = Net::HTTP.post_form(uri, {"search" => "invest"})
+  end
+
   def self.check_for_keywords(string)
     # get result from indico
 
@@ -41,7 +54,8 @@ Indico.api_key = "dd5e35044234093be537186e304d0531"
       puts result
 
       # get keywords
-      keywords = ["banks", "finance", "bank", "TFSA", "RRSP", "Spousal RRSP", "RRIF", "Spousal RRIF", "GRSP", "RESP", "Corporate", "LIRA", "Joint"]
+      keywords = ["banks", "finance", "bank", "TFSA", "RRSP", "Spousal RRSP", "RRIF", "Spousal RRIF", "GRSP", "RESP", "Corporate", "LIRA", "Joint", "Portfolio rebalancing", "Tax loss harvesting",
+                  "Reinvesting dividends", "Compound interest"]
 
       # return true if the keyword exists, else return false
       result.each do |key, value|
