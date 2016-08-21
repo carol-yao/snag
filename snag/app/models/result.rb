@@ -20,7 +20,7 @@ Indico.api_key = "dd5e35044234093be537186e304d0531"
       puts check_for_keywords(tweet.text)
       puts filter_emotions(tweet.text)
 
-      if check_for_keywords(tweet.text) && filter_emotions(tweet.text)
+      if check_for_keywords(tweet.text) && (filter_emotions(tweet.text))
         tweet_array << {message: tweet.text, date: tweet.created_at, username: tweet.user.name}
       end
     end
@@ -68,26 +68,38 @@ Indico.api_key = "dd5e35044234093be537186e304d0531"
   end
 
   def self.filter_emotions(string)
+
+    keywords = ["anger", "fear", "sadness"]
+
     begin
       result = Indico.emotion(string, {top_n: 3});
     rescue
       puts "could not parse that (emotions)"
     else
-      if result["anger"]
-        return true
-      else
-        return false
+      result.each do |k, v|
+        until keywords.include?(k) do
+          puts result
+          return false
+        end
       end
+      puts result
+      return true
     end
   end
 
 
   def self.save_relevent_messages(messages)
+
     messages.each do |x|
-        Result.create(message: x[:message], date: x[:date], username: x[:username])
-        puts 'stored'
+      result = Indico.text_tags(x[:message], {top_n: 3})
+      result_keys = result.keys
+      arr_string = result_keys.join(",")
+      x[:text_tags] = arr_string
+
+      Result.create(message: x[:message], date: x[:date], username: x[:username], text_tags: x[:text_tags])
+      puts 'stored'
+
     end
   end
-
 
 end
